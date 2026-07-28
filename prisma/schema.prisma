@@ -16,6 +16,8 @@ model User {
 
   role         Role     @default(ADMIN)
 
+  restaurants  Restaurant[]
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -25,4 +27,17 @@ enum Role {
   WAITER
   KITCHEN
   
+}
+
+model Restaurant {
+  id          String   @id @default(uuid())
+  name        String
+  address     String?
+  phone       String?
+
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

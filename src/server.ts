@@ -1,4 +1,7 @@
+import app from "./app.js";
 import prisma from "./config/database.js";
+
+const PORT = 5000;
 
 async function startServer() {
   try {
@@ -6,7 +9,9 @@ async function startServer() {
 
     console.log("Database connected");
 
-    // start express server here
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
 
   } catch (error) {
     console.error("Database connection failed", error);
