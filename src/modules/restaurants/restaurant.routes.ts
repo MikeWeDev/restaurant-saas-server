@@ -2,16 +2,11 @@ import { Router } from "express";
 import {
   create,
   getMyRestaurant,
+  updateMyRestaurant,
 } from "./restaurant.controller.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { authorize } from "../../middleware/role.middleware.js";
 import { Role } from "@prisma/client";
-
-
-import {
-  updateMyRestaurant
-} from "./restaurant.controller.js";
-
 
 const router = Router();
 
