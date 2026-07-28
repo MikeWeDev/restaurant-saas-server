@@ -36,6 +36,10 @@ export async function getMyRestaurant(
   return restaurant;
 }
 
+export async function getAllRestaurants() {
+  return prisma.restaurant.findMany();
+}
+
 export async function updateMyRestaurant(
   ownerId: string,
   data: {

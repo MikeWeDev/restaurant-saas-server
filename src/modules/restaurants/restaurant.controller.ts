@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   createRestaurant,
   getMyRestaurant as getMyRestaurantService,
+  getAllRestaurants as getAllRestaurantsService,
 } from "./restaurant.service.js";
 import {
   updateMyRestaurant as updateMyRestaurantService
@@ -59,6 +60,26 @@ export async function getMyRestaurant(
       restaurant,
     });
 
+  } catch (error) {
+    res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong",
+    });
+  }
+}
+
+export async function getAllRestaurants(
+  req: Request,
+  res: Response
+) {
+  try {
+    const restaurants = await getAllRestaurantsService();
+
+    res.status(200).json({
+      restaurants,
+    });
   } catch (error) {
     res.status(400).json({
       message:

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   create,
+  getAllRestaurants,
   getMyRestaurant,
   updateMyRestaurant,
 } from "./restaurant.controller.js";
@@ -9,6 +10,13 @@ import { authorize } from "../../middleware/role.middleware.js";
 import { Role } from "@prisma/client";
 
 const router = Router();
+
+router.get(
+  "/",
+  authenticate,
+  authorize(Role.ADMIN),
+  getAllRestaurants
+);
 
 router.post(
   "/",
