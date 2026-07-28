@@ -4,6 +4,7 @@ import {
   getAllRestaurants,
   getMyRestaurant,
   updateMyRestaurant,
+  deleteMyRestaurant,
 } from "./restaurant.controller.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { authorize } from "../../middleware/role.middleware.js";
@@ -36,5 +37,11 @@ router.patch(
   authenticate,
   authorize(Role.ADMIN),
   updateMyRestaurant
+);
+router.delete(
+  "/me",
+  authenticate,
+  authorize(Role.ADMIN),
+  deleteMyRestaurant
 );
 export default router;

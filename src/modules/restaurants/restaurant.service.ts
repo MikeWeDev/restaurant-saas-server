@@ -40,6 +40,26 @@ export async function getAllRestaurants() {
   return prisma.restaurant.findMany();
 }
 
+export async function deleteMyRestaurant(
+  ownerId: string
+) {
+  const restaurant = await prisma.restaurant.findFirst({
+    where: {
+      ownerId,
+    },
+  });
+
+  if (!restaurant) {
+    throw new Error("Restaurant not found");
+  }
+
+  return prisma.restaurant.delete({
+    where: {
+      id: restaurant.id,
+    },
+  });
+}
+
 export async function updateMyRestaurant(
   ownerId: string,
   data: {

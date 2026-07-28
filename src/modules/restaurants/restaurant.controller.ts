@@ -3,9 +3,8 @@ import {
   createRestaurant,
   getMyRestaurant as getMyRestaurantService,
   getAllRestaurants as getAllRestaurantsService,
-} from "./restaurant.service.js";
-import {
-  updateMyRestaurant as updateMyRestaurantService
+  deleteMyRestaurant as deleteMyRestaurantService,
+  updateMyRestaurant as updateMyRestaurantService,
 } from "./restaurant.service.js";
 
 export async function create(
@@ -105,6 +104,24 @@ export async function updateMyRestaurant(
       restaurant,
     });
 
+  } catch (error) {
+    res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong",
+    });
+  }
+}
+
+export async function deleteMyRestaurant(
+  req: Request,
+  res: Response
+) {
+  try {
+    await deleteMyRestaurantService(req.user!.userId);
+
+    res.status(204).end();
   } catch (error) {
     res.status(400).json({
       message:
