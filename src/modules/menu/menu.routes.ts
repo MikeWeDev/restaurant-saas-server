@@ -1,11 +1,15 @@
-import {Router} from "express"
-import { createCategory , getCategories,updateCategory,deleteCategory} from "./menu.controller.js";
+import { Router } from "express";
+import {
+  createCategory,
+  deleteCategory,
+  getCategories,
+  updateCategory
+} from "./menu.controller.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { authorize } from "../../middleware/role.middleware.js";
 import { Role } from "@prisma/client";
 
-
-const router = Router();
+const router: Router = Router();
 
 router.post(
   "/categories",
@@ -13,7 +17,6 @@ router.post(
   authorize(Role.ADMIN),
   createCategory
 );
-
 
 router.get(
   "/categories",
@@ -35,6 +38,5 @@ router.delete(
   authorize(Role.ADMIN),
   deleteCategory
 );
-
 
 export default router;
