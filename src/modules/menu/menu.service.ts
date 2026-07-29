@@ -16,7 +16,7 @@ export async function createCategoryService(
 
   const category = await prisma.category.create({
     data: {
-      name: name,
+      name,
       restaurantId: restaurant.id
     }
   });
@@ -24,21 +24,23 @@ export async function createCategoryService(
   return category;
 }
 
-export async function getCategoriesService(userId: string){
-   const restaurant = await prisma.restaurant.findFirst({
-  where:{
-    ownerId:userId
-  }
-})
- if (!restaurant) {
+export async function getCategoriesService(userId: string) {
+  const restaurant = await prisma.restaurant.findFirst({
+    where: {
+      ownerId: userId
+    }
+  });
+
+  if (!restaurant) {
     throw new Error("Restaurant not found for the user");
   }
- 
+
   const categories = await prisma.category.findMany({
-    where:{
-        restaurantId:restaurant.id
+    where: {
+      restaurantId: restaurant.id
     }
-  })
+  });
+
   return categories;
 }
 
@@ -88,7 +90,7 @@ const restaurant = await prisma.restaurant.findFirst({
 
   const result = await prisma.category.deleteMany({
     where: {
-      id: id,
+      id,
       restaurantId: restaurant.id
     }
   });
