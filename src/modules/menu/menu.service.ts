@@ -151,3 +151,48 @@ export async function createMenuItemService(
 
   return menuItem;
 }
+
+export async function updateMenuItemService(
+ id: string,
+  name: string,
+  description: string,
+  price: number,
+  categoryId: string,
+  userId: string
+){
+  console.log("USER ID:", userId);
+ const restaurant = await prisma.restaurant.findFirst({
+  where: {
+    ownerId: userId
+  }
+});
+console.log("RESTAURANT:", restaurant);
+ if (!restaurant) {
+    throw new Error("Restaurant not found for the user");
+  }
+  const menuItem = await prisma.menuItem.findFirst({
+  where: {
+    id: id,
+    category: {
+      restaurantId: restaurant.id
+    }
+  }
+});
+if (!menuItem) {
+  throw new Error(
+    "Menu item not found or you do not have permission to update it"
+  );
+}
+const updatedMenuItem = await prisma.menuItem.update({
+  where: {
+    id: id
+  },
+  data: {
+    name,
+    description,
+    price,
+    categoryId
+  }
+});
+return updatedMenuItem;
+}
