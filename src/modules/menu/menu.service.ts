@@ -166,7 +166,7 @@ export async function updateMenuItemService(
   }
 });
  if (!restaurant) {
-throw new Error("Restaurant not found"); 
+throw new Error("No restaurant is associated with this account");
  }
   const menuItem = await prisma.menuItem.findFirst({
   where: {
