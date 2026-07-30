@@ -166,8 +166,8 @@ export async function updateMenuItemService(
   }
 });
  if (!restaurant) {
-    throw new Error("Restaurant not found for the user");
-  }
+throw new Error("Restaurant not found"); 
+ }
   const menuItem = await prisma.menuItem.findFirst({
   where: {
     id: id,
