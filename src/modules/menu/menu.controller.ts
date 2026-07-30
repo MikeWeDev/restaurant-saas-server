@@ -6,7 +6,6 @@ import {
   deleteCategoryService,
   createMenuItemService
 } from "./menu.service.js";
-import id from "zod/v4/locales/id.js";
 
 export async function createCategory(
   req: Request,
@@ -133,26 +132,47 @@ export async function deleteCategory(
 }
 
 
+export async function createMenuItem(
+  req: Request,
+  res: Response
+) {
+  try {
 
-export async function createMenuItem( req: Request, res: Response){
-  try{
-      const {name, description, price} = req.body;
-      const userId = req.user.userId;
+    const {
+      name,
+      description,
+      price,
+      categoryId
+    } = req.body;
+
+    const userId = req.user.userId;
 
 
-      const menuItem = await createMenuItemService(name, description, price, userId);
+    const menuItem = await createMenuItemService(
+      name,
+      description,
+      price,
+      categoryId,
+      userId
+    );
 
-      res.status(201).json({
-          message: "Menu item created successfully",
-          menuItem
-      });   
-  }catch(err){
+
+    res.status(201).json({
+      message: "Menu item created successfully",
+      menuItem
+    });
+
+
+  } catch(err) {
+
     console.error(err);
+
     res.status(500).json({
       message:
         err instanceof Error
           ? err.message
           : "Something went wrong"
     });
+
   }
 }

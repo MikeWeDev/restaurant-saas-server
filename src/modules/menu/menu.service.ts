@@ -101,31 +101,53 @@ const restaurant = await prisma.restaurant.findFirst({
 
   return result;
 }
-
 export async function createMenuItemService(
   name: string,
   description: string,
   price: number,
+  categoryId: string,
   userId: string
 ) {
+
+  // 1. Find the restaurant owned by the logged-in admin
   const restaurant = await prisma.restaurant.findFirst({
     where: {
       ownerId: userId
     }
   });
 
+
   if (!restaurant) {
     throw new Error("Restaurant not found for the user");
   }
 
+
+  // 2. Check that the category belongs to this restaurant
+  const category = await prisma.category.findFirst({
+    where: {
+      id: categoryId,
+      restaurantId: restaurant.id
+    }
+  });
+
+
+  if (!category) {
+    throw new Error(
+      "Category not found or does not belong to your restaurant"
+    );
+  }
+
+
+  // 3. Create menu item inside that category
   const menuItem = await prisma.menuItem.create({
     data: {
       name,
       description,
       price,
-      restaurantId: restaurant.id
+      categoryId: category.id
     }
   });
+
 
   return menuItem;
 }
