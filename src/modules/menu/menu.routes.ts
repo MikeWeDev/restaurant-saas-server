@@ -41,6 +41,13 @@ router.delete(
   deleteCategory
 );
 
+router.patch(
+  "/menu-items/:id",
+  authenticate,
+  authorize(Role.ADMIN),
+  updateMenuItem
+);
+
 router.post(
   "/menu-items",
   authenticate,
@@ -48,11 +55,6 @@ router.post(
   createMenuItem
 );
 
-router.patch(
-  "/menu-items/:id",
-  authenticate,
-  authorize(Role.ADMIN),
-  updateMenuItem
-);
+
 
 export default router;
