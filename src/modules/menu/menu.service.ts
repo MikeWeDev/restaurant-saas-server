@@ -96,7 +96,7 @@ const restaurant = await prisma.restaurant.findFirst({
   });
 
   if (result.count === 0) {
-    throw new Error("Category not found or you do not have permission to delete it");
+    throw new Error("Category not found or you do not have permission to delete");
   }
 
   return result;
