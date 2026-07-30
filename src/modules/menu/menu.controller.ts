@@ -3,8 +3,10 @@ import {
   createCategoryService,
   getCategoriesService,
   updateCategoryService,
-  deleteCategoryService
+  deleteCategoryService,
+  createMenuItemService
 } from "./menu.service.js";
+import id from "zod/v4/locales/id.js";
 
 export async function createCategory(
   req: Request,
@@ -125,6 +127,31 @@ export async function deleteCategory(
       message:
         error instanceof Error
           ? error.message
+          : "Something went wrong"
+    });
+  }
+}
+
+
+
+export async function createMenuItem( req: Request, res: Response){
+  try{
+      const {name, description, price} = req.body;
+      const userId = req.user.userId;
+
+
+      const menuItem = await createMenuItemService(name, description, price, userId);
+
+      res.status(201).json({
+          message: "Menu item created successfully",
+          menuItem
+      });   
+  }catch(err){
+    console.error(err);
+    res.status(500).json({
+      message:
+        err instanceof Error
+          ? err.message
           : "Something went wrong"
     });
   }

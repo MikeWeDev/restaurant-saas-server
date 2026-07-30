@@ -101,3 +101,31 @@ const restaurant = await prisma.restaurant.findFirst({
 
   return result;
 }
+
+export async function createMenuItemService(
+  name: string,
+  description: string,
+  price: number,
+  userId: string
+) {
+  const restaurant = await prisma.restaurant.findFirst({
+    where: {
+      ownerId: userId
+    }
+  });
+
+  if (!restaurant) {
+    throw new Error("Restaurant not found for the user");
+  }
+
+  const menuItem = await prisma.menuItem.create({
+    data: {
+      name,
+      description,
+      price,
+      restaurantId: restaurant.id
+    }
+  });
+
+  return menuItem;
+}

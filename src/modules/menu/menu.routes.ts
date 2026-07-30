@@ -3,7 +3,8 @@ import {
   createCategory,
   deleteCategory,
   getCategories,
-  updateCategory
+  updateCategory,
+  createMenuItem
 } from "./menu.controller.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { authorize } from "../../middleware/role.middleware.js";
@@ -37,6 +38,13 @@ router.delete(
   authenticate,
   authorize(Role.ADMIN),
   deleteCategory
+);
+
+router.post(
+  "/menu-items",
+  authenticate,
+  authorize(Role.ADMIN),
+  createMenuItem
 );
 
 export default router;
