@@ -160,13 +160,11 @@ export async function updateMenuItemService(
   categoryId: string,
   userId: string
 ){
-  console.log("USER ID:", userId);
  const restaurant = await prisma.restaurant.findFirst({
   where: {
     ownerId: userId
   }
 });
-console.log("RESTAURANT:", restaurant);
  if (!restaurant) {
     throw new Error("Restaurant not found for the user");
   }
