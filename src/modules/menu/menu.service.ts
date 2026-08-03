@@ -286,3 +286,39 @@ export async function updateMenuItemAvailabilityService(
 
   return updatedMenuItem;
 }
+
+export async function getMenuItemsService(
+  userId: string
+) {
+
+  const restaurant = await prisma.restaurant.findFirst({
+    where: {
+      ownerId: userId
+    }
+  });
+
+
+  if (!restaurant) {
+    throw new Error(
+      "No restaurant is associated with this account"
+    );
+  }
+
+
+  const menuItems = await prisma.menuItem.findMany({
+    where: {
+      category: {
+        restaurantId: restaurant.id
+      }
+    },
+    include: {
+      category: true
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+
+
+  return menuItems;
+}

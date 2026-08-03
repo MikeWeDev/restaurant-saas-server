@@ -7,7 +7,8 @@ import {
   createMenuItem,
   updateMenuItem,
   deleteMenuItem,
-  updateMenuItemAvailability
+  updateMenuItemAvailability,
+  getMenuItems
 } from "./menu.controller.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { authorize } from "../../middleware/role.middleware.js";
