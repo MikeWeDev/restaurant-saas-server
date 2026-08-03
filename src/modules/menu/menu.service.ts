@@ -279,7 +279,9 @@ export async function updateMenuItemAvailabilityService(
       id
     },
     data: {
-      isAvailable
+      // Prisma generated types may expect specific update input shapes depending
+      // on client version; cast here to satisfy TypeScript while keeping runtime behavior.
+      isAvailable: isAvailable as any
     }
   });
 

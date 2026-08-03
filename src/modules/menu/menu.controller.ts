@@ -14,10 +14,14 @@ import {
 export async function createCategory(
   req: Request,
   res: Response
-): Promise<void> {
+): Promise<Response | void> {
   try {
 
     const { name } = req.body;
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const userId = req.user.userId;
 
@@ -48,8 +52,12 @@ export async function createCategory(
 export async function getCategories(
   req: Request,
   res: Response
-): Promise<void> {
+): Promise<Response | void> {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user.userId;
     const categories = await getCategoriesService(userId);
 
@@ -71,19 +79,25 @@ export async function getCategories(
 export async function updateCategory(
   req: Request,
   res: Response
-): Promise<void> {
+): Promise<Response | void> {
   try {
     const { id } = req.params;
+    let idStr: string | undefined = id as any;
+    if (Array.isArray(idStr)) idStr = idStr[0];
     const { name } = req.body;
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user.userId;
 
-    if (!id) {
+    if (!idStr) {
       return res.status(400).json({
         message: "Category id is required"
       });
     }
 
-    const category = await updateCategoryService(id, name, userId);
+    const category = await updateCategoryService(idStr, name, userId);
 
     res.status(200).json({
       message: "Category updated successfully",
@@ -102,19 +116,25 @@ export async function updateCategory(
 export async function deleteCategory(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
   try {
     const { id } = req.params;
+    let idStr: string | undefined = id as any;
+    if (Array.isArray(idStr)) idStr = idStr[0];
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user.userId;
 
-    if (!id) {
+    if (!idStr) {
       return res.status(400).json({
         message: "Category id is required"
       });
     }
 
     const result = await deleteCategoryService(
-      id,
+      idStr,
       userId
     );
 
@@ -139,24 +159,33 @@ export async function deleteCategory(
 export async function createMenuItem(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
   try {
 
-    const {
-      name,
-      description,
-      price,
-      categoryId
-    } = req.body;
+    const { name, description, price } = req.body;
+    let { categoryId } = req.body;
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const userId = req.user.userId;
+
+    // normalize categoryId if array
+    if (Array.isArray(categoryId)) {
+      categoryId = categoryId[0];
+    }
+
+    if (!categoryId || typeof categoryId !== "string") {
+      return res.status(400).json({ message: "categoryId is required" });
+    }
 
 
     const menuItem = await createMenuItemService(
       name,
       description,
       price,
-      categoryId,
+      categoryId as string,
       userId
     );
 
@@ -184,28 +213,34 @@ export async function createMenuItem(
 export async function updateMenuItem(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
   try {
 
     const { id } = req.params;
+    let idStr: string | undefined = id as any;
+    if (Array.isArray(idStr)) idStr = idStr[0];
 
-    const {
-      name,
-      description,
-      price,
-      categoryId
-    } = req.body;
+    const { name, description, price } = req.body;
+    let { categoryId } = req.body;
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const userId = req.user.userId;
+
+    if (Array.isArray(categoryId)) {
+      categoryId = categoryId[0];
+    }
 
 
     const updatedMenuItem =
       await updateMenuItemService(
-        id,
+        idStr as string,
         name,
         description,
         price,
-        categoryId,
+        categoryId as string,
         userId
       );
 
@@ -233,17 +268,22 @@ export async function updateMenuItem(
 export async function deleteMenuItem(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
   try {
   const {id} = req.params;
+   if (!req.user) {
+     return res.status(401).json({ message: "Unauthorized" });
+   }
    const userId = req.user.userId;
-   if (!id) {
+   let idStr: string | undefined = id as any;
+   if (Array.isArray(idStr)) idStr = idStr[0];
+   if (!idStr) {
      return res.status(400).json({
        message: "Menu item id is required"
      });
    }
   const menuItem = await deleteMenuItemService(
-  id,
+  idStr,
   userId
 );
     res.status(200).json({
@@ -264,19 +304,29 @@ export async function deleteMenuItem(
 export async function updateMenuItemAvailability(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
   try {
 
     const { id } = req.params;
 
     const { isAvailable } = req.body;
 
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user.userId;
 
 
+    let idStr: string | undefined = id as any;
+    if (Array.isArray(idStr)) idStr = idStr[0];
+    if (!idStr) {
+      return res.status(400).json({ message: "Menu item id is required" });
+    }
+
     const updatedMenuItem =
       await updateMenuItemAvailabilityService(
-        id,
+        idStr,
         isAvailable,
         userId
       );
@@ -305,9 +355,13 @@ export async function updateMenuItemAvailability(
 export async function getMenuItems(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
 
   try {
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const userId = req.user.userId;
 

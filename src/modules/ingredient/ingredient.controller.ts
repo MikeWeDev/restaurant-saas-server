@@ -10,10 +10,14 @@ import {
 export async function createIngredient(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
   try {
 
     const { name } = req.body;
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const userId = req.user.userId;
 
@@ -48,9 +52,13 @@ export async function createIngredient(
 export async function getIngredients(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
 
   try {
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const userId = req.user.userId;
 
@@ -84,7 +92,7 @@ export async function getIngredients(
 export async function updateIngredient(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
 
   try {
 
@@ -92,12 +100,19 @@ export async function updateIngredient(
 
     const { name } = req.body;
 
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user.userId;
+
+    let idStr: string | undefined = id as any;
+    if (Array.isArray(idStr)) idStr = idStr[0];
 
 
     const ingredient =
       await updateIngredientService(
-        id,
+        idStr as string,
         name,
         userId
       );
@@ -126,18 +141,25 @@ export async function updateIngredient(
 export async function deleteIngredient(
   req: Request,
   res: Response
-) {
+): Promise<Response | void> {
 
   try {
 
     const { id } = req.params;
 
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user.userId;
+
+    let idStr: string | undefined = id as any;
+    if (Array.isArray(idStr)) idStr = idStr[0];
 
 
     const ingredient =
       await deleteIngredientService(
-        id,
+        idStr as string,
         userId
       );
 
