@@ -1,6 +1,9 @@
 import { Router } from "express";
 import {
-  createIngredient
+  createIngredient,
+  getIngredients,
+  updateIngredient,
+  deleteIngredient
 } from "./ingredient.controller.js";
 
 import { authenticate } from "../../middleware/auth.middleware.js";
@@ -18,5 +21,25 @@ router.post(
   createIngredient
 );
 
+router.get(
+  "/ingredients",
+  authenticate,
+  authorize(Role.ADMIN),
+  getIngredients
+);
+
+router.patch(
+  "/ingredients/:id",
+  authenticate,
+  authorize(Role.ADMIN),
+  updateIngredient
+);
+
+router.delete(
+  "/ingredients/:id",
+  authenticate,
+  authorize(Role.ADMIN),
+  deleteIngredient
+);
 
 export default router;

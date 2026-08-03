@@ -233,3 +233,56 @@ export async function deleteMenuItemService(
 
   return deletedMenuItem;
 }
+
+export async function updateMenuItemAvailabilityService(
+  id: string,
+  isAvailable: boolean,
+  userId: string
+) {
+
+  // 1. Find restaurant owned by admin
+  const restaurant = await prisma.restaurant.findFirst({
+    where: {
+      ownerId: userId
+    }
+  });
+
+
+  if (!restaurant) {
+    throw new Error(
+      "No restaurant is associated with this account"
+    );
+  }
+
+
+  // 2. Check menu item belongs to restaurant
+  const menuItem = await prisma.menuItem.findFirst({
+    where: {
+      id,
+      category: {
+        restaurantId: restaurant.id
+      }
+    }
+  });
+
+
+  if (!menuItem) {
+    throw new Error(
+      "Menu item not found or you do not have permission"
+    );
+  }
+
+
+  // 3. Update availability
+  const updatedMenuItem = await prisma.menuItem.update({
+    where: {
+      id
+    },
+    data: {
+      isAvailable
+    }
+  });
+
+
+  return updatedMenuItem;
+}

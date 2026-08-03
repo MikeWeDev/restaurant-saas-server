@@ -6,7 +6,8 @@ import {
   deleteCategoryService,
   createMenuItemService,
   updateMenuItemService,
-  deleteMenuItemService
+  deleteMenuItemService,
+  updateMenuItemAvailabilityService
 } from "./menu.service.js";
 
 export async function createCategory(
@@ -256,5 +257,46 @@ export async function deleteMenuItem(
             ? error.message
             : "Something went wrong"
       });
+  }
+}
+
+export async function updateMenuItemAvailability(
+  req: Request,
+  res: Response
+) {
+  try {
+
+    const { id } = req.params;
+
+    const { isAvailable } = req.body;
+
+    const userId = req.user.userId;
+
+
+    const updatedMenuItem =
+      await updateMenuItemAvailabilityService(
+        id,
+        isAvailable,
+        userId
+      );
+
+
+    res.status(200).json({
+      message: "Menu item availability updated successfully",
+      menuItem: updatedMenuItem
+    });
+
+
+  } catch(error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong"
+    });
+
   }
 }
