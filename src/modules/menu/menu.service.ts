@@ -194,3 +194,42 @@ const updatedMenuItem = await prisma.menuItem.update({
 });
 return updatedMenuItem;
 }
+
+
+export async function deleteMenuItemService(
+  id: string,
+  userId: string
+) {
+  const restaurant = await prisma.restaurant.findFirst({
+    where: {
+      ownerId: userId
+    }
+  });
+
+  if (!restaurant) {
+    throw new Error("No restaurant is associated with this account");
+  }
+
+  const menuItem = await prisma.menuItem.findFirst({
+    where: {
+      id: id,
+      category: {
+        restaurantId: restaurant.id
+      }
+    }
+  });
+
+  if (!menuItem) {
+    throw new Error(
+      "Menu item not found or you do not have permission to delete it"
+    );
+  }
+
+  const deletedMenuItem = await prisma.menuItem.delete({
+    where: {
+      id: id
+    }
+  });
+
+  return deletedMenuItem;
+}

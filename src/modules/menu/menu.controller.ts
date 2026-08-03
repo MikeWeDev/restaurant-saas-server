@@ -5,7 +5,8 @@ import {
   updateCategoryService,
   deleteCategoryService,
   createMenuItemService,
-  updateMenuItemService
+  updateMenuItemService,
+  deleteMenuItemService
 } from "./menu.service.js";
 
 export async function createCategory(
@@ -224,5 +225,36 @@ export async function updateMenuItem(
           : "Something went wrong"
     });
 
+  }
+}
+
+export async function deleteMenuItem(
+  req: Request,
+  res: Response
+) {
+  try {
+  const {id} = req.params;
+   const userId = req.user.userId;
+   if (!id) {
+     return res.status(400).json({
+       message: "Menu item id is required"
+     });
+   }
+  const menuItem = await deleteMenuItemService(
+  id,
+  userId
+);
+    res.status(200).json({
+  message: "Menu item deleted successfully",
+  menuItem
+});
+  } catch (error) {
+     console.error(error);
+      res.status(500).json({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong"
+      });
   }
 }

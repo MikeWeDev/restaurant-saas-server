@@ -5,7 +5,8 @@ import {
   getCategories,
   updateCategory,
   createMenuItem,
-  updateMenuItem
+  updateMenuItem,
+  deleteMenuItem
 } from "./menu.controller.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { authorize } from "../../middleware/role.middleware.js";
@@ -56,6 +57,11 @@ router.patch(
   updateMenuItem
 );
 
-
+router.delete(
+  "/menu-items/:id",
+  authenticate,
+  authorize(Role.ADMIN),
+  deleteMenuItem
+);
 
 export default router;
