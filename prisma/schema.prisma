@@ -3,56 +3,54 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String @id @default(uuid())
+  email        String @unique
   passwordHash String
   name         String
 
-  role         Role     @default(ADMIN)
+  role Role @default(ADMIN)
 
-  restaurants  Restaurant[]
+  restaurants Restaurant[]
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
   ADMIN
   WAITER
   KITCHEN
-  
 }
 
 model Restaurant {
-  id          String   @id @default(uuid())
-  name        String
-  address     String?
-  phone       String?
+  id      String  @id @default(uuid())
+  name    String
+  address String?
+  phone   String?
 
   ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id])
+  owner       User         @relation(fields: [ownerId], references: [id])
   categories  Category[]
   ingredients Ingredient[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
-
 model Category {
-  id           String     @id @default(uuid())
-  name         String
+  id   String @id @default(uuid())
+  name String
 
-  restaurantId String 
-  restaurant   Restaurant @relation( fields: [restaurantId],references: [id])
-  menuItems MenuItem[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  menuItems    MenuItem[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model MenuItem {
@@ -60,12 +58,15 @@ model MenuItem {
   name        String
   description String?
   price       Float
-  isAvailable Boolean @default(true)
+  isAvailable Boolean  @default(true)
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
-  imageUrl     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  imageUrl    String?
+
+  ingredients MenuItemIngredient[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Ingredient {
@@ -74,8 +75,24 @@ model Ingredient {
   name String
 
   restaurantId String
-  restaurant Restaurant @relation( fields: [restaurantId], references: [id] )
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  menuItems MenuItemIngredient[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model MenuItemIngredient {
+  id String @id @default(uuid())
+
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  isRequired Boolean @default(false)
+
+  createdAt DateTime @default(now())
 }
