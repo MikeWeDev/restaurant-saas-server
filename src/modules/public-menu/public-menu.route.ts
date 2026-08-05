@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
-  getPublicCategories
+  getPublicCategories,
+  getPublicMenuItems
 } from "./public-menu.controller.js";
 
 
@@ -12,5 +13,9 @@ router.get(
   getPublicCategories
 );
 
+router.get(
+  "/categories/:categoryId/menu-items",
+  getPublicMenuItems
+);
 
 export default router;

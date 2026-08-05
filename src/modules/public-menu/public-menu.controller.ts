@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
-  getPublicCategoriesService
+  getPublicCategoriesService,
+  getPublicMenuItemsService
 } from "./public-menu.service.js";
 
 
@@ -37,4 +38,25 @@ export async function getPublicCategories(
     });
 
   }
+}
+
+export async function getPublicMenuItems(req: Request, res: Response) {
+    try{
+ const {categoryId} = req.params;
+      const menuItems = await getPublicMenuItemsService(categoryId as string);
+      res.status(200).json({
+        message: "Menu items fetched successfully",
+        menuItems
+      });
+    }catch(error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong"
+    });
+}
 }

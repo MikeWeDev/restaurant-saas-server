@@ -17,3 +17,24 @@ export async function getPublicCategoriesService(
 
   return categories;
 }
+
+export async function getPublicMenuItemsService(
+  categoryId: string
+) {
+
+  const menuItems = await prisma.menuItem.findMany({
+    where: {
+      categoryId,
+      isAvailable: true
+    },
+    orderBy: {
+      createdAt: "asc"
+    },
+    include: {
+  category: true
+}
+  });
+
+
+  return menuItems;
+}
