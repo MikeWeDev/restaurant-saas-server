@@ -8,6 +8,10 @@ declare global {
         userId: string;
         role: Role;
       };
+      file?: {
+        filename: string;
+        [key: string]: any;
+      };
     }
   }
 }

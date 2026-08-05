@@ -324,3 +324,54 @@ export async function getMenuItemsService(
 
   return menuItems;
 }
+
+export async function updateMenuItemImageService(
+  id: string,
+  imageUrl: string,
+  userId: string
+) {
+
+  const restaurant = await prisma.restaurant.findFirst({
+    where: {
+      ownerId: userId
+    }
+  });
+
+
+  if (!restaurant) {
+    throw new Error(
+      "No restaurant is associated with this account"
+    );
+  }
+
+
+  const menuItem = await prisma.menuItem.findFirst({
+    where: {
+      id,
+      category: {
+        restaurantId: restaurant.id
+      }
+    }
+  });
+
+
+  if (!menuItem) {
+    throw new Error(
+      "Menu item not found or you do not have permission"
+    );
+  }
+
+
+  const updatedMenuItem =
+    await prisma.menuItem.update({
+      where: {
+        id
+      },
+      data: {
+        imageUrl
+      } as any
+    });
+
+
+  return updatedMenuItem;
+}

@@ -8,7 +8,8 @@ import {
   updateMenuItemService,
   deleteMenuItemService,
   updateMenuItemAvailabilityService,
-  getMenuItemsService
+  getMenuItemsService,
+  updateMenuItemImageService
 } from "./menu.service.js";
 
 export async function createCategory(
@@ -375,6 +376,63 @@ export async function getMenuItems(
     res.status(200).json({
       message: "Menu items fetched successfully",
       menuItems
+    });
+
+
+  } catch(error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong"
+    });
+
+  }
+}
+
+export async function uploadMenuItemImage(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { id } = req.params;
+
+    let idStr: string | undefined = id as any;
+    if (Array.isArray(idStr)) idStr = idStr[0];
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = req.user.userId;
+
+    if (!idStr) {
+      return res.status(400).json({ message: "Menu item id is required" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Image file is required"
+      });
+    }
+
+    const filename = (req.file as any).filename;
+    const imageUrl = `/uploads/menu-items/${filename}`;
+
+    const updatedMenuItem =
+      await updateMenuItemImageService(
+        idStr as string,
+        imageUrl,
+        userId
+      );
+
+
+    res.status(200).json({
+      message: "Menu item image uploaded successfully",
+      menuItem: updatedMenuItem
     });
 
 

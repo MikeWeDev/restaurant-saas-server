@@ -8,11 +8,15 @@ import {
   updateMenuItem,
   deleteMenuItem,
   updateMenuItemAvailability,
-  getMenuItems
+  getMenuItems,
+  uploadMenuItemImage
 } from "./menu.controller.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { authorize } from "../../middleware/role.middleware.js";
 import { Role } from "@prisma/client";
+import multer from "multer";
+
+const upload = multer({ dest: "uploads/menu-items/" });
 
 const router: Router = Router();
 
@@ -80,4 +84,11 @@ router.patch(
   updateMenuItemAvailability
 );
 
+router.patch(
+ "/menu-items/:id/image",
+ authenticate,
+ authorize(Role.ADMIN),
+  upload.single("image"),
+  uploadMenuItemImage
+);
 export default router;
