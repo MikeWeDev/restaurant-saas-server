@@ -13,8 +13,8 @@ model User {
   email        String @unique
   passwordHash String
   name         String
-
-  role Role @default(ADMIN)
+  carts        Cart[]
+  role         Role   @default(ADMIN)
 
   restaurants Restaurant[]
 
@@ -64,9 +64,9 @@ model MenuItem {
   imageUrl    String?
 
   ingredients MenuItemIngredient[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  cartItems   CartItem[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
 }
 
 model Ingredient {
@@ -77,10 +77,10 @@ model Ingredient {
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
 
-  menuItems MenuItemIngredient[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  menuItems       MenuItemIngredient[]
+  cartIngredients CartItemIngredient[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 }
 
 model MenuItemIngredient {
@@ -93,6 +93,46 @@ model MenuItemIngredient {
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
 
   isRequired Boolean @default(false)
+
+  createdAt DateTime @default(now())
+}
+
+model Cart {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  items CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id String @id @default(uuid())
+
+  cartId String
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+
+  quantity Int @default(1)
+
+  selectedIngredients CartItemIngredient[]
+
+  createdAt DateTime @default(now())
+}
+
+model CartItemIngredient {
+  id String @id @default(uuid())
+
+  cartItemId String
+  cartItem   CartItem @relation(fields: [cartItemId], references: [id], onDelete: Cascade)
+
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
 
   createdAt DateTime @default(now())
 }
