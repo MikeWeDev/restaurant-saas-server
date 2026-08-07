@@ -38,3 +38,24 @@ export async function getPublicMenuItemsService(
 
   return menuItems;
 }
+
+export async function getPublicMenuItemIngredientsService(
+  menuItemId: string
+) {
+
+  const ingredients =
+    await prisma.menuItemIngredient.findMany({
+
+      where: {
+        menuItemId
+      },
+
+      include: {
+        ingredient: true
+      }
+
+    });
+
+
+  return ingredients;
+}
