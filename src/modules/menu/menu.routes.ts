@@ -9,7 +9,8 @@ import {
   deleteMenuItem,
   updateMenuItemAvailability,
   getMenuItems,
-  uploadMenuItemImage
+  uploadMenuItemImage,
+  assignIngredientToMenuItem
 } from "./menu.controller.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
 import { authorize } from "../../middleware/role.middleware.js";
@@ -90,5 +91,12 @@ router.patch(
  authorize(Role.ADMIN),
   upload.single("image"),
   uploadMenuItemImage
+);
+
+router.post(
+  "/menu-items/:menuItemId/ingredients",
+  authenticate,
+  authorize(Role.ADMIN),
+  assignIngredientToMenuItem
 );
 export default router;

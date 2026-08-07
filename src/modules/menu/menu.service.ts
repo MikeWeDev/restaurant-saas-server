@@ -375,3 +375,64 @@ export async function updateMenuItemImageService(
 
   return updatedMenuItem;
 }
+
+export async function assignIngredientToMenuItemService(
+  menuItemId: string,
+  ingredientId: string,
+  isRequired: boolean
+) {
+
+  const menuItem = await prisma.menuItem.findUnique({
+    where: {
+      id: menuItemId
+    }
+  });
+
+  if (!menuItem) {
+    throw new Error("Menu item not found");
+  }
+
+
+  const ingredient = await prisma.ingredient.findUnique({
+    where: {
+      id: ingredientId
+    }
+  });
+
+  if (!ingredient) {
+    throw new Error("Ingredient not found");
+  }
+
+
+  const existingIngredient =
+    await prisma.menuItemIngredient.findFirst({
+      where: {
+        menuItemId,
+        ingredientId
+      }
+    });
+
+
+  if (existingIngredient) {
+    throw new Error(
+      "Ingredient already assigned to this menu item"
+    );
+  }
+
+
+  const menuItemIngredient =
+    await prisma.menuItemIngredient.create({
+      data: {
+        menuItemId,
+        ingredientId,
+        isRequired
+      },
+      include: {
+        ingredient: true,
+        menuItem: true
+      }
+    });
+
+
+  return menuItemIngredient;
+}

@@ -9,7 +9,8 @@ import {
   deleteMenuItemService,
   updateMenuItemAvailabilityService,
   getMenuItemsService,
-  updateMenuItemImageService
+  updateMenuItemImageService,
+  assignIngredientToMenuItemService
 } from "./menu.service.js";
 
 export async function createCategory(
@@ -447,5 +448,39 @@ export async function uploadMenuItemImage(
           : "Something went wrong"
     });
 
+  }
+}
+
+export async function assignIngredientToMenuItem(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { menuItemId } = req.params;
+
+    const { ingredientId, isRequired } = req.body;
+
+    const menuItemIngredient =
+      await assignIngredientToMenuItemService(
+        menuItemId as string,
+        ingredientId,
+        isRequired
+      );
+
+    res.status(201).json({
+      message: "Ingredient assigned to menu item successfully",
+      menuItemIngredient
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong"
+    });
   }
 }
