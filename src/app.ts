@@ -5,6 +5,7 @@ import restaurantRoutes from "./modules/restaurants/restaurant.routes.js";
 import menuRoutes from "./modules/menu/menu.routes.js";
 import ingredientRoutes from "./modules/ingredient/ingredient.route.js";
 import publicMenuRoutes from "./modules/public-menu/public-menu.route.js";
+import cartRoutes from "./modules/cart/cart.routes.js";
 
 const app = express();
 
@@ -35,4 +36,6 @@ app.use(
   "/api/ingredient",
   ingredientRoutes
 );
+
+app.use("/api/cart", cartRoutes);
 export default app;

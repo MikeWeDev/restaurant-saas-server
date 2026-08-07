@@ -13,7 +13,6 @@ model User {
   email        String @unique
   passwordHash String
   name         String
-  carts        Cart[]
   role         Role   @default(ADMIN)
 
   restaurants Restaurant[]
@@ -34,12 +33,30 @@ model Restaurant {
   address String?
   phone   String?
 
-  ownerId     String
-  owner       User         @relation(fields: [ownerId], references: [id])
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
   categories  Category[]
   ingredients Ingredient[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  tables      Table[]
+  carts       Cart[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Table {
+  id     String @id @default(uuid())
+  number Int
+  qrCode String @unique
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  carts Cart[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
@@ -48,25 +65,30 @@ model Category {
 
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  menuItems    MenuItem[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+
+  menuItems MenuItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MenuItem {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
   price       Float
-  isAvailable Boolean  @default(true)
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
-  imageUrl    String?
+  isAvailable Boolean @default(true)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  imageUrl String?
 
   ingredients MenuItemIngredient[]
   cartItems   CartItem[]
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Ingredient {
@@ -79,8 +101,9 @@ model Ingredient {
 
   menuItems       MenuItemIngredient[]
   cartIngredients CartItemIngredient[]
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MenuItemIngredient {
@@ -100,13 +123,15 @@ model MenuItemIngredient {
 model Cart {
   id String @id @default(uuid())
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  tableId String
+  table   Table  @relation(fields: [tableId], references: [id])
 
   items CartItem[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId String?
 }
 
 model CartItem {
