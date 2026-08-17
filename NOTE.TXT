@@ -1,0 +1,13 @@
+| Order | Use case                                             | Status  |
+| ----- | ---------------------------------------------------- | ------- |
+| 1     | Customer can view food details                       | ✅ Done  |
+| 2     | Customer can customize their order                   | ✅ Done  |
+| 3     | Customer can add items to cart                       | ✅ Done  |
+| 4     | **Customer can view their table's cart**             | 🔜 Next |
+| 5     | **Customer can update their cart**                   | ⏭️      |
+| 6     | **Customer can remove items from their cart**        | ⏭️      |
+| 7     | **Customer can add special instructions**            | ⏭️      |
+| 8     | **Customer can choose a payment method**             | ⏭️      |
+| 9     | **Customer can place an order**                      | ⏭️      |
+| 10    | **Customer can track their order status**            | ⏭️      |
+| 11    | **Customer receives real-time order status updates** | ⏭️      |
