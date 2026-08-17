@@ -45,6 +45,7 @@ export async function getOrCreateCartService(
 
   return cart;
 }
+
 export async function addCartItemService(
   qrCode: string,
   menuItemId: string,
