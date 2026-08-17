@@ -59,3 +59,23 @@ export async function getPublicMenuItemIngredientsService(
 
   return ingredients;
 }
+
+export async function getPublicMenuItemService(
+  menuItemId: string
+) {
+  const menuItem = await prisma.menuItem.findUnique({
+    where: {
+      id: menuItemId
+    },
+    include: {
+      category: true,
+      ingredients: {
+        include: {
+          ingredient: true
+        }
+      }
+    }
+  });
+
+  return menuItem;
+}

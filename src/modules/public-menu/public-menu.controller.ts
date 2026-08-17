@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import {
   getPublicCategoriesService,
   getPublicMenuItemsService,
-  getPublicMenuItemIngredientsService
+  getPublicMenuItemIngredientsService,
+  getPublicMenuItemService
 } from "./public-menu.service.js";
 
 
@@ -93,5 +94,32 @@ export async function getPublicMenuItemIngredients(
           : "Something went wrong"
     });
 
+  }
+}
+
+export async function getPublicMenuItem(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { menuItemId } = req.params;
+
+    const menuItem = await getPublicMenuItemService(
+      menuItemId as string
+    );
+
+    res.status(200).json({
+      message: "Menu item fetched successfully",
+      menuItem
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Something went wrong"
+    });
   }
 }
