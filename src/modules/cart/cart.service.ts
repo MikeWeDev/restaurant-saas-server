@@ -60,11 +60,36 @@ export async function getOrCreateCartService(
         }
       }
     });
+  } else if (!cart.restaurantId) {
+    cart = await prisma.cart.update({
+      where: {
+        id: cart.id
+      },
+      data: {
+        restaurantId: table.restaurantId
+      },
+      include: {
+        items: {
+          include: {
+            menuItem: true,
+            selectedIngredients: {
+              include: {
+                ingredient: true
+              }
+            }
+          }
+        },
+        table: {
+          include: {
+            restaurant: true
+          }
+        }
+      }
+    });
   }
 
   return cart;
 }
-
 export async function addCartItemService(
   qrCode: string,
   menuItemId: string,
