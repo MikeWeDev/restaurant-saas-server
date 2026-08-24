@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getOrCreateCartService,addCartItemService } from "./cart.service.js";
+import { getOrCreateCartService,addCartItemService,updateCartItemService } from "./cart.service.js";
 
 
 export async function getOrCreateCart(
@@ -71,4 +71,34 @@ export async function addCartItem(req: Request, res: Response) {
           : "Something went wrong"
     });
   }
+}
+
+export async function updateCartItem(
+  req: Request,
+  res: Response
+) {
+  try{
+   const { qrCode, cartItemId } = req.params;
+  const { quantity, ingredientIds } = req.body;
+  const cartItem = await updateCartItemService(
+  qrCode as string,
+  cartItemId as string,
+  quantity,
+  ingredientIds
+);
+res.status(200).json({
+  message: "Cart item updated successfully",
+  cartItem
+});
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({
+      message:
+        err instanceof Error
+          ? err.message
+          : "Something went wrong"
+    });
+  }
+ 
 }
