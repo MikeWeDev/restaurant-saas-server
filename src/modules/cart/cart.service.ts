@@ -18,7 +18,16 @@ export async function getOrCreateCartService(
       tableId: table.id
     },
     include: {
-      items: true,
+      items: {
+        include: {
+          menuItem: true,
+          selectedIngredients: {
+            include: {
+              ingredient: true
+            }
+          }
+        }
+      },
       table: {
         include: {
           restaurant: true
@@ -33,7 +42,16 @@ export async function getOrCreateCartService(
         tableId: table.id
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            menuItem: true,
+            selectedIngredients: {
+              include: {
+                ingredient: true
+              }
+            }
+          }
+        },
         table: {
           include: {
             restaurant: true
@@ -45,6 +63,7 @@ export async function getOrCreateCartService(
 
   return cart;
 }
+
 
 export async function addCartItemService(
   qrCode: string,
