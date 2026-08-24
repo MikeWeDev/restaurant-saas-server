@@ -39,7 +39,8 @@ export async function getOrCreateCartService(
   if (!cart) {
     cart = await prisma.cart.create({
       data: {
-        tableId: table.id
+        tableId: table.id,
+        restaurantId: table.restaurantId
       },
       include: {
         items: {
@@ -63,7 +64,6 @@ export async function getOrCreateCartService(
 
   return cart;
 }
-
 
 export async function addCartItemService(
   qrCode: string,
@@ -294,6 +294,8 @@ export async function updateCartItemService(
     }
   });
 }
+
+
 export async function removeCartItemService(
   qrCode: string,
   cartItemId: string
