@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getOrCreateCart,addCartItem,updateCartItem} from "./cart.controller.js";
+import { getOrCreateCart,addCartItem,updateCartItem,removeCartItem} from "./cart.controller.js";
 
 const router = Router();
 
@@ -16,5 +16,11 @@ router.patch(
   "/table/:qrCode/items/:cartItemId",
   updateCartItem
 )
+
+router.delete(
+  "/table/:qrCode/items/:cartItemId",
+  removeCartItem
+);
+
 
 export default router;
