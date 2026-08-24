@@ -294,3 +294,38 @@ export async function updateCartItemService(
     }
   });
 }
+export async function removeCartItemService(
+  qrCode: string,
+  cartItemId: string
+) {
+  const table = await prisma.table.findUnique({
+    where: {
+      qrCode
+    }
+  });
+
+  if (!table) {
+    throw new Error("Table not found");
+  }
+
+  const cartItem = await prisma.cartItem.findFirst({
+    where: {
+      id: cartItemId,
+      cart: {
+        tableId: table.id
+      }
+    }
+  });
+
+  if (!cartItem) {
+    throw new Error("Cart item not found");
+  }
+
+  await prisma.cartItem.delete({
+    where: {
+      id: cartItem.id
+    }
+  });
+
+  return cartItem;
+}
