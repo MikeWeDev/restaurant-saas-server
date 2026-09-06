@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService } from "./cart.service.js";
+import { getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
 
 
 export async function getOrCreateCart(
@@ -118,6 +118,32 @@ res.status(200).json({
 });}
 catch(err){
     console.log(err);
+    res.status(500).json({
+      message:
+        err instanceof Error
+          ? err.message
+          : "Something went wrong"
+    });
+  }
+}
+export async function placeOrder(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { qrCode } = req.params;
+
+    const order = await placeOrderService(
+      qrCode as string
+    );
+
+    res.status(201).json({
+      message: "Order placed successfully",
+      order
+    });
+  } catch (err) {
+    console.log(err);
+
     res.status(500).json({
       message:
         err instanceof Error
