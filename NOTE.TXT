@@ -10,6 +10,3 @@
 | 8     | **Customer can track their order status**             | ⏭️      |
 | 9     | **Customer receives real-time order status updates**  | ⏭️      |
 
-
-we will test thiswith other usevcases later 
-GET http://localhost:5000/api/cart/table/mike-burger-table-5
