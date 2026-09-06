@@ -356,3 +356,104 @@ export async function removeCartItemService(
 
   return cartItem;
 }
+export async function placeOrderService(qrCode: string) {
+  const table = await prisma.table.findUnique({
+    where: {
+      qrCode
+    }
+  });
+
+  if (!table) {
+    throw new Error("Table not found");
+  }
+
+  const cart = await prisma.cart.findFirst({
+    where: {
+      tableId: table.id
+    },
+    include: {
+      items: {
+        include: {
+          menuItem: true,
+          selectedIngredients: {
+            include: {
+              ingredient: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!cart) {
+    throw new Error("Cart not found");
+  }
+
+  if (cart.items.length === 0) {
+    throw new Error("Cart is empty");
+  }
+
+  const totalAmount = cart.items.reduce(
+    (total, item) => {
+      return total + item.menuItem.price * item.quantity;
+    },
+    0
+  );
+
+  const order = await prisma.$transaction(async (tx) => {
+    const order = await tx.order.create({
+      data: {
+        restaurantId: table.restaurantId,
+        tableId: table.id,
+        totalAmount
+      }
+    });
+
+    for (const cartItem of cart.items) {
+      const orderItem = await tx.orderItem.create({
+        data: {
+          orderId: order.id,
+          menuItemId: cartItem.menuItemId,
+          name: cartItem.menuItem.name,
+          price: cartItem.menuItem.price,
+          quantity: cartItem.quantity
+        }
+      });
+
+      if (cartItem.selectedIngredients.length > 0) {
+        await tx.orderItemIngredient.createMany({
+          data: cartItem.selectedIngredients.map(
+            (selectedIngredient) => ({
+              orderItemId: orderItem.id,
+              ingredientId: selectedIngredient.ingredientId,
+              name: selectedIngredient.ingredient.name
+            })
+          )
+        });
+      }
+    }
+
+    await tx.cartItem.deleteMany({
+      where: {
+        cartId: cart.id
+      }
+    });
+
+    return order;
+  });
+
+  return prisma.order.findUnique({
+    where: {
+      id: order.id
+    },
+    include: {
+      items: {
+        include: {
+          selectedIngredients: true
+        }
+      },
+      table: true,
+      restaurant: true
+    }
+  });
+}
