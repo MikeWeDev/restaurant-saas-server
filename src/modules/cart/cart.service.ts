@@ -457,3 +457,25 @@ export async function placeOrderService(qrCode: string) {
     }
   });
 }
+
+export async function getOrderStatusService(
+  orderId: string
+) {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId
+    }
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  return {
+    id: order.id,
+    status: order.status,
+    totalAmount: order.totalAmount,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt
+  };
+}

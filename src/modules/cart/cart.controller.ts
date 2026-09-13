@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
+import {getOrderStatusService, getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
 
 
 export async function getOrCreateCart(
@@ -139,6 +139,33 @@ export async function placeOrder(
 
     res.status(201).json({
       message: "Order placed successfully",
+      order
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      message:
+        err instanceof Error
+          ? err.message
+          : "Something went wrong"
+    });
+  }
+}
+
+export async function getOrderStatus(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { orderId } = req.params;
+
+    const order = await getOrderStatusService(
+      orderId as string
+    );
+
+    res.status(200).json({
+      message: "Order status fetched successfully",
       order
     });
   } catch (err) {

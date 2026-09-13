@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getOrCreateCart,addCartItem,updateCartItem,removeCartItem,placeOrder} from "./cart.controller.js";
+import { getOrCreateCart,addCartItem,updateCartItem,removeCartItem,placeOrder,getOrderStatus} from "./cart.controller.js";
 
 const router = Router();
 
@@ -25,6 +25,11 @@ router.delete(
 router.post(
   "/table/:qrCode/orders",
   placeOrder
+);
+
+router.get(
+  "/orders/:orderId/status",
+  getOrderStatus
 );
 
 export default router;
