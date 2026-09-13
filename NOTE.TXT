@@ -7,6 +7,6 @@
 | 5     | **Customer can update their cart**                   | ✅ Done |
 | 6     | **Customer can remove items from their cart**        | ✅ Done |
 | 7     | **Customer can place an order**                      | ✅ Done |
-| 8     | **Customer can track their order status**            | ⏭️      |
+| 8     | **Customer can track their order status**            | ✅ Done |
 | 9     | **Customer receives real-time order status updates** | ⏭️      |
 
