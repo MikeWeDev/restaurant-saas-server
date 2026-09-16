@@ -1,4 +1,5 @@
 import prisma from "../../config/database.js";
+import { OrderStatus } from "@prisma/client";
 
 export async function getOrCreateCartService(
   qrCode: string
@@ -477,5 +478,34 @@ export async function getOrderStatusService(
     totalAmount: order.totalAmount,
     createdAt: order.createdAt,
     updatedAt: order.updatedAt
+  };
+}
+export async function updateOrderStatusService(
+  orderId: string,
+  status: OrderStatus
+) {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId
+    }
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  const updatedOrder = await prisma.order.update({
+    where: {
+      id: orderId
+    },
+    data: {
+      status
+    }
+  });
+
+  return {
+    id: updatedOrder.id,
+    status: updatedOrder.status,
+    updatedAt: updatedOrder.updatedAt
   };
 }

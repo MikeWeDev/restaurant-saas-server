@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import {getOrderStatusService, getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
-
+import {updateOrderStatusService,getOrderStatusService, getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
+import { OrderStatus } from "@prisma/client";
 
 export async function getOrCreateCart(
   req: Request,
@@ -166,6 +166,35 @@ export async function getOrderStatus(
 
     res.status(200).json({
       message: "Order status fetched successfully",
+      order
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      message:
+        err instanceof Error
+          ? err.message
+          : "Something went wrong"
+    });
+  }
+}
+
+export async function updateOrderStatus(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const order = await updateOrderStatusService(
+      orderId as string,
+      status as OrderStatus
+    );
+
+    res.status(200).json({
+      message: "Order status updated successfully",
       order
     });
   } catch (err) {
