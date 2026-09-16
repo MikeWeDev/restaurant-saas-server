@@ -502,12 +502,14 @@ export async function updateOrderStatusService(
   });
 
   const io = getIO();
-  io.emit("orderStatusUpdated", {
-  orderId: updatedOrder.id,
-  status: updatedOrder.status,
-  updatedAt: updatedOrder.updatedAt
-});
-
+io.to(`order:${updatedOrder.id}`).emit(
+  "orderStatusUpdated",
+  {
+    orderId: updatedOrder.id,
+    status: updatedOrder.status,
+    updatedAt: updatedOrder.updatedAt
+  }
+);
 
   return {
     id: updatedOrder.id,
