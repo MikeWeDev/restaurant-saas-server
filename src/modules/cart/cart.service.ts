@@ -1,5 +1,6 @@
 import prisma from "../../config/database.js";
 import { OrderStatus } from "@prisma/client";
+import { getIO } from "../../config/socket.js";
 
 export async function getOrCreateCartService(
   qrCode: string
@@ -209,8 +210,6 @@ export async function addCartItemService(
     }
   });
 }
-
-
 export async function updateCartItemService(
   qrCode: string,
   cartItemId: string,
@@ -320,7 +319,6 @@ export async function updateCartItemService(
     }
   });
 }
-
 
 export async function removeCartItemService(
   qrCode: string,
@@ -502,6 +500,14 @@ export async function updateOrderStatusService(
       status
     }
   });
+
+  const io = getIO();
+  io.emit("orderStatusUpdated", {
+  orderId: updatedOrder.id,
+  status: updatedOrder.status,
+  updatedAt: updatedOrder.updatedAt
+});
+
 
   return {
     id: updatedOrder.id,

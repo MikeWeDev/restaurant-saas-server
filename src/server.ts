@@ -1,6 +1,6 @@
 // 1. Imports
 import http from "node:http";
-import { Server } from "socket.io";
+import { initializeSocket } from "./config/socket.js";
 
 import app from "./app.js";
 import prisma from "./config/database.js";
@@ -14,11 +14,7 @@ const PORT = process.env.PORT
 const httpServer = http.createServer(app);
 
 // 4. Attach Socket.IO
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*"
-  }
-});
+const io = initializeSocket(httpServer);
 
 // 5. Socket connection handling
 io.on("connection", (socket) => {
