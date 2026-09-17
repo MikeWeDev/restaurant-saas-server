@@ -478,6 +478,8 @@ export async function getOrderStatusService(
     updatedAt: order.updatedAt
   };
 }
+
+
 export async function updateOrderStatusService(
   orderId: string,
   status: OrderStatus
@@ -516,4 +518,27 @@ io.to(`order:${updatedOrder.id}`).emit(
     status: updatedOrder.status,
     updatedAt: updatedOrder.updatedAt
   };
+}
+
+export async function getIncomingOrdersService() {
+  const orders = await prisma.order.findMany({
+    where: {
+      status: {
+        in: ["PENDING", "CONFIRMED"]
+      }
+    },
+    include: {
+      table: true,
+      items: {
+        include: {
+          selectedIngredients: true
+        }
+      }
+    },
+    orderBy: {
+      createdAt: "asc"
+    }
+  });
+
+  return orders;
 }

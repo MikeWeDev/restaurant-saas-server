@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { updateOrderStatus,getOrCreateCart,addCartItem,updateCartItem,removeCartItem,placeOrder,getOrderStatus} from "./cart.controller.js";
+import { getIncomingOrders,updateOrderStatus,getOrCreateCart,addCartItem,updateCartItem,removeCartItem,placeOrder,getOrderStatus} from "./cart.controller.js";
 
 const router = Router();
 
@@ -35,6 +35,11 @@ router.get(
 router.patch(
   "/orders/:orderId/status",
   updateOrderStatus
+);
+
+router.get(
+  "/orders/incoming",
+  getIncomingOrders
 );
 
 export default router;
