@@ -355,6 +355,7 @@ export async function removeCartItemService(
 
   return cartItem;
 }
+
 export async function placeOrderService(qrCode: string) {
   const table = await prisma.table.findUnique({
     where: {
@@ -441,20 +442,30 @@ export async function placeOrderService(qrCode: string) {
     return order;
   });
 
-  return prisma.order.findUnique({
-    where: {
-      id: order.id
+ const fullOrder = await prisma.order.findUnique({
+  where: {
+    id: order.id
+  },
+  include: {
+    items: {
+      include: {
+        selectedIngredients: true
+      }
     },
-    include: {
-      items: {
-        include: {
-          selectedIngredients: true
-        }
-      },
-      table: true,
-      restaurant: true
-    }
-  });
+    table: true,
+    restaurant: true
+  }
+});
+
+if (!fullOrder) {
+  throw new Error("Order could not be loaded after creation");
+}
+
+const io = getIO();
+
+io.emit("newOrder", fullOrder);
+
+return fullOrder;
 }
 
 export async function getOrderStatusService(
