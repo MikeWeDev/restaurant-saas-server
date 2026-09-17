@@ -48,6 +48,13 @@ export function initializeSocket(httpServer: HttpServer) {
       }
     });
 
+    socket.on("joinKitchen", () => {
+  socket.join("kitchen");
+
+  console.log(
+    `Socket ${socket.id} joined kitchen room`
+  );
+});
     socket.on("disconnect", () => {
       console.log(
         `Socket disconnected: ${socket.id}`

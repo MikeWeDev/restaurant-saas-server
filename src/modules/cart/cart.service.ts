@@ -463,7 +463,10 @@ if (!fullOrder) {
 
 const io = getIO();
 
-io.emit("newOrder", fullOrder);
+io.to("kitchen").emit(
+  "newOrder",
+  fullOrder
+);
 
 return fullOrder;
 }
