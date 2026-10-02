@@ -556,3 +556,39 @@ export async function getIncomingOrdersService() {
 
   return orders;
 }
+
+
+export async function acceptOrderService(
+  orderId: string
+) {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId
+    }
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  if (order.status !== "PENDING") {
+    throw new Error(
+      "Only pending orders can be accepted"
+    );
+  }
+
+  const updatedOrder = await prisma.order.update({
+    where: {
+      id: orderId
+    },
+    data: {
+      status: "CONFIRMED"
+    }
+  });
+
+  return {
+    id: updatedOrder.id,
+    status: updatedOrder.status,
+    updatedAt: updatedOrder.updatedAt
+  };
+}
