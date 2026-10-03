@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {startPreparingOrderService,acceptOrderService,getIncomingOrdersService,updateOrderStatusService,getOrderStatusService, getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
+import {markOrderReadyService,startPreparingOrderService,acceptOrderService,getIncomingOrdersService,updateOrderStatusService,getOrderStatusService, getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
 import { OrderStatus } from "@prisma/client";
 
 export async function getOrCreateCart(
@@ -272,6 +272,33 @@ export async function startPreparingOrder(
 
     return res.status(200).json({
       message: "Order preparation started",
+      order
+    });
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({
+      message:
+        err instanceof Error
+          ? err.message
+          : "Something went wrong"
+    });
+  }
+}
+
+export async function markOrderReady(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { orderId } = req.params;
+
+    const order = await markOrderReadyService(
+      orderId as string
+    );
+
+    return res.status(200).json({
+      message: "Order marked as ready",
       order
     });
   } catch (err) {

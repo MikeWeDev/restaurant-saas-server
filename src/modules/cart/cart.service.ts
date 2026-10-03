@@ -638,3 +638,49 @@ export async function startPreparingOrderService(
     updatedAt: updatedOrder.updatedAt
   };
 }
+
+export async function markOrderReadyService(
+  orderId: string
+) {
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId
+    }
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  if (order.status !== "PREPARING") {
+    throw new Error(
+      "Only orders being prepared can be marked as ready"
+    );
+  }
+
+  const updatedOrder = await prisma.order.update({
+    where: {
+      id: orderId
+    },
+    data: {
+      status: "READY"
+    }
+  });
+
+  const io = getIO();
+
+  io.to(`order:${updatedOrder.id}`).emit(
+    "orderStatusUpdated",
+    {
+      orderId: updatedOrder.id,
+      status: updatedOrder.status,
+      updatedAt: updatedOrder.updatedAt
+    }
+  );
+
+  return {
+    id: updatedOrder.id,
+    status: updatedOrder.status,
+    updatedAt: updatedOrder.updatedAt
+  };
+}
