@@ -493,39 +493,52 @@ export async function getOrderStatusService(
   };
 }
 
+const allowedTransitions = {
+  PENDING: ["CONFIRMED"],
+  CONFIRMED: ["PREPARING"],
+  PREPARING: ["READY"],
+  READY: ["COMPLETED"],
+  COMPLETED: [],
+  CANCELLED: [],
+  REJECTED: []
+} as const;
+
 
 export async function updateOrderStatusService(
   orderId: string,
   status: OrderStatus
 ) {
   const order = await prisma.order.findUnique({
-    where: {
-      id: orderId
-    }
+    where: { id: orderId }
   });
 
   if (!order) {
     throw new Error("Order not found");
   }
 
+  const allowedStatuses = allowedTransitions[order.status];
+
+  if (!allowedStatuses.includes(status as never)) {
+    throw new Error(
+      `Cannot change order status from ${order.status} to ${status}`
+    );
+  }
+
   const updatedOrder = await prisma.order.update({
-    where: {
-      id: orderId
-    },
-    data: {
-      status
-    }
+    where: { id: orderId },
+    data: { status }
   });
 
   const io = getIO();
-io.to(`order:${updatedOrder.id}`).emit(
-  "orderStatusUpdated",
-  {
-    orderId: updatedOrder.id,
-    status: updatedOrder.status,
-    updatedAt: updatedOrder.updatedAt
-  }
-);
+
+  io.to(`order:${updatedOrder.id}`).emit(
+    "orderStatusUpdated",
+    {
+      orderId: updatedOrder.id,
+      status: updatedOrder.status,
+      updatedAt: updatedOrder.updatedAt
+    }
+  );
 
   return {
     id: updatedOrder.id,
@@ -681,6 +694,60 @@ export async function markOrderReadyService(
   return {
     id: updatedOrder.id,
     status: updatedOrder.status,
+    updatedAt: updatedOrder.updatedAt
+  };
+}
+
+export async function rejectOrderService(
+  orderId: string,
+  reason: string
+) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId }
+  });
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  if (order.status !== "PENDING") {
+    throw new Error(
+      "Only pending orders can be rejected"
+    );
+  }
+
+  const cleanReason = reason.trim();
+
+  if (!cleanReason) {
+    throw new Error(
+      "A rejection reason is required"
+    );
+  }
+
+  const updatedOrder = await prisma.order.update({
+    where: { id: orderId },
+    data: {
+      status: "REJECTED",
+      rejectionReason: cleanReason
+    }
+  });
+
+  const io = getIO();
+
+  io.to(`order:${updatedOrder.id}`).emit(
+    "orderStatusUpdated",
+    {
+      orderId: updatedOrder.id,
+      status: updatedOrder.status,
+      rejectionReason: updatedOrder.rejectionReason,
+      updatedAt: updatedOrder.updatedAt
+    }
+  );
+
+  return {
+    id: updatedOrder.id,
+    status: updatedOrder.status,
+    rejectionReason: updatedOrder.rejectionReason,
     updatedAt: updatedOrder.updatedAt
   };
 }
