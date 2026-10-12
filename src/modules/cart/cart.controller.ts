@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {markOrderReadyService,startPreparingOrderService,acceptOrderService,getIncomingOrdersService,updateOrderStatusService,getOrderStatusService, getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
+import {rejectOrderService,markOrderReadyService,startPreparingOrderService,acceptOrderService,getIncomingOrdersService,updateOrderStatusService,getOrderStatusService, getOrCreateCartService,addCartItemService,updateCartItemService,removeCartItemService,placeOrderService } from "./cart.service.js";
 import { OrderStatus } from "@prisma/client";
 
 export async function getOrCreateCart(
@@ -309,6 +309,51 @@ export async function markOrderReady(
         err instanceof Error
           ? err.message
           : "Something went wrong"
+    });
+  }
+}
+
+export async function rejectOrder(
+  req: Request,
+  res: Response
+) {
+  try {
+    const { orderId } = req.params;
+    const { reason } = req.body;
+
+    if (
+      typeof reason !== "string" ||
+      !reason.trim()
+    ) {
+      return res.status(400).json({
+        message: "A rejection reason is required"
+      });
+    }
+
+    const order = await rejectOrderService(
+      orderId as string,
+      reason
+    );
+
+    return res.status(200).json({
+      message: "Order rejected successfully",
+      order
+    });
+  } catch (err) {
+    console.error(err);
+
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Something went wrong";
+
+    const statusCode =
+      message === "Order not found" ? 404 :
+      message === "Only pending orders can be rejected" ? 409 :
+      500;
+
+    return res.status(statusCode).json({
+      message
     });
   }
 }
